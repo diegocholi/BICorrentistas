@@ -1,0 +1,35 @@
+-,13,MySQL
+1,correntistas,,88,256,1,
+2,X,idCorrentistas,Integer," "," ",X," "," "
+2," ",name,Varchar,300," "," "," "," "
+2," ",debt,Double," "," "," "," "," "
+2," ",annualPaymentCapacity,Double," "," "," "," "," "
+2," ",isAliveMother,Boolean," "," "," "," "," "
+2," ",isAliveFather,Boolean," "," "," "," "," "
+2," ",isAliveHeir,Boolean," "," "," "," "," "
+2," ",isAliveSpouse,Boolean," "," "," "," "," "
+2," ",isMarried,Boolean," "," "," "," "," "
+2," ",isNoble,Boolean," "," "," "," "," "
+2," ",isPopular,Boolean," "," "," "," "," "
+2,,isDeath,Boolean,,,
+2," ",popularity,Double," "," "," "," "," "
+2,,idHouse,Integer," "," "," "," "," ",7
+2,,idTitle,Integer,,," "," "," ",4
+2,,idCulture,Integer,,," "," "," ",5
+2,,idAllegiances,Integer,,,X,,,9
+1,title,,347,491,2,
+2,X,idTitle,Integer,,,X
+2,,title,Char,100,,
+1,culture,,160,40,3,
+2,X,idCulture,Integer,,,X
+2,,culture,Char,100,,
+1,house,,464,136,6,
+2,X,idHouse,Integer," "," ",X," "," "
+2," ",house,Char,10," "," "," "," "
+1,Allegiances,,80,480,8,
+2,X,idAllegiances,Integer,,,X,,
+2,,Allegiances,Varchar,10,,,,
+4,2,1,2,1,0,"0,5",4,0,0,,0,0,0
+4,3,1,2,1,0,"0,5",5,0,0,,0,0,0
+4,6,1,2,1,0,"0,5",7,0,0,,0,0,0
+4,8,1,2,1,0,"0,5",9,0,0,,0,0,0
