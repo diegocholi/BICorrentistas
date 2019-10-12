@@ -12,8 +12,9 @@ GO
 CREATE TABLE correntistas (
     idCorrentistas Integer not null IDENTITY(1,1),
     name NVARCHAR(50),
-    debt NVARCHAR(50),
-    annualPaymentCapacity NVARCHAR(25),
+    debt MONEY,
+    annualPaymentCapacity MONEY,
+	diference MONEY,
     isAliveMother NVARCHAR(1),
     isAliveFather NVARCHAR(1),
     isAliveHeir NVARCHAR(1),

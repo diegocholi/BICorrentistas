@@ -7,10 +7,10 @@ DECLARE @name NVARCHAR(50), @title NVARCHAR(50),
 	@isAliveHeir NVARCHAR(50), @isAliveSpouse NVARCHAR(50),
 	@isMarried NVARCHAR(50), @isNoble NVARCHAR(50),
 	@isPopular NVARCHAR(50), @popularity NVARCHAR(50),
-	@divida NVARCHAR(50), @numDeadReations NVARCHAR(50),
-	@annualPaymentCapacity NVARCHAR(50), @isDeath BIT,
+	@divida MONEY, @numDeadReations NVARCHAR(50),
+	@annualPaymentCapacity MONEY, @isDeath BIT,
 	@idHouse INT, @idTitle INT,
-	@idCulture INT
+	@idCulture INT, @diference MONEY 
   
 PRINT '-------- Carregando Fato (...) --------';  
   
@@ -24,8 +24,12 @@ SELECT
 	[isAliveHeir], [isAliveSpouse],
 	[isMarried], [isNoble],
 	[isPopular], [popularity],
-	[Dívida],[numDeadRelations],
-	[Capacidade de pagamento anual]
+	[numDeadRelations],
+	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Dívida], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)),
+	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Capacidade de pagamento anual], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)),
+	-- Subtração
+	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Capacidade de pagamento anual], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)) -
+	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Dívida], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2))
 FROM poolCorrentistas.dbo.correntistas_banco_bravos 
   
 OPEN fact  
@@ -39,8 +43,9 @@ INTO @name, @title ,
 	@isAliveHeir, @isAliveSpouse,
 	@isMarried, @isNoble,
 	@isPopular, @popularity,
-	@divida, @numDeadReations,
-	@annualPaymentCapacity 
+	@numDeadReations,
+	@divida, @annualPaymentCapacity, 
+	@diference
   
 WHILE @@FETCH_STATUS = 0  
 BEGIN  
@@ -48,6 +53,17 @@ BEGIN
 	SET @idHouse = NULL
 	SET @idTitle = NULL
 	SET @idCulture = NULL
+
+	/*
+	IF @annualPaymentCapacity - @divida > 0
+	BEGIN
+		SET @diference = @annualPaymentCapacity - @divida
+	END
+	ELSE
+	BEGIN
+		SET @diference = 0
+	END
+	*/
 
 	IF EXISTS (SELECT * FROM poolCorrentistas.dbo.correntistas_banco_bravos WHERE house = @house)
 		SET @idHouse = (SELECT idHouse FROM dataWareHouse.dbo.house WHERE house = @house)
@@ -57,6 +73,7 @@ BEGIN
 
 	IF EXISTS (SELECT * FROM poolCorrentistas.dbo.correntistas_banco_bravos WHERE culture = @culture)
 		SET @idCulture = (SELECT idCulture FROM dataWareHouse.dbo.culture WHERE culture = @culture)
+
 
 	IF EXISTS (SELECT * FROM poolCorrentistas.dbo.correntistas_obito WHERE name = @name)
 		SET @isDeath = 1
@@ -71,7 +88,8 @@ BEGIN
 				isNoble, isPopular,
 				isMale,	popularity, 
 				isDeath, idHouse,
-				idTitle, idCulture
+				idTitle, idCulture,
+				diference
 			) 
 		VALUES 
 			(
@@ -82,7 +100,8 @@ BEGIN
 				@isNoble, @isPopular,
 				@male, @popularity,
 				@isDeath, @idHouse,
-				@idTitle, @idCulture
+				@idTitle, @idCulture,
+				@diference
 			)
 
     FETCH NEXT FROM fact   
@@ -94,11 +113,22 @@ BEGIN
 		@isAliveHeir, @isAliveSpouse,
 		@isMarried, @isNoble,
 		@isPopular, @popularity,
-		@divida, @numDeadReations,
-		@annualPaymentCapacity 
+		@numDeadReations,
+		@divida, @annualPaymentCapacity, 
+		@diference
 END   
 CLOSE fact;  
 DEALLOCATE fact;  
 
 SELECT * FROM dataWareHouse.dbo.correntistas
 GO
+
+
+
+/*
+SELECT 
+	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Capacidade de pagamento anual], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)) -
+	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Dívida], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)) AS DIFERENCE
+FROM poolCorrentistas.dbo.correntistas_banco_bravos
+GO
+*/
