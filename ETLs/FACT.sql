@@ -1,4 +1,6 @@
-
+CREATE PROCEDURE InserFact
+AS
+BEGIN
 DECLARE @name NVARCHAR(50), @title NVARCHAR(50),
 	@male NVARCHAR(50), @culture NVARCHAR(50),
 	@mother NVARCHAR(50), @father NVARCHAR(50),
@@ -11,7 +13,6 @@ DECLARE @name NVARCHAR(50), @title NVARCHAR(50),
 	@annualPaymentCapacity MONEY, @isDeath BIT,
 	@idHouse INT, @idTitle INT,
 	@idCulture INT, @diference MONEY 
-  
 PRINT '-------- Carregando Fato (...) --------';  
   
 DECLARE fact CURSOR FOR   
@@ -53,17 +54,6 @@ BEGIN
 	SET @idHouse = NULL
 	SET @idTitle = NULL
 	SET @idCulture = NULL
-
-	/*
-	IF @annualPaymentCapacity - @divida > 0
-	BEGIN
-		SET @diference = @annualPaymentCapacity - @divida
-	END
-	ELSE
-	BEGIN
-		SET @diference = 0
-	END
-	*/
 
 	IF EXISTS (SELECT * FROM poolCorrentistas.dbo.correntistas_banco_bravos WHERE house = @house)
 		SET @idHouse = (SELECT idHouse FROM dataWareHouse.dbo.house WHERE house = @house)
@@ -119,16 +109,4 @@ BEGIN
 END   
 CLOSE fact;  
 DEALLOCATE fact;  
-
-SELECT * FROM dataWareHouse.dbo.correntistas
-GO
-
-
-
-/*
-SELECT 
-	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Capacidade de pagamento anual], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)) -
-	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Dívida], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)) AS DIFERENCE
-FROM poolCorrentistas.dbo.correntistas_banco_bravos
-GO
-*/
+END
