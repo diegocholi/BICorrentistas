@@ -1,7 +1,9 @@
+USE dataWareHouse
+GO
 /*
 * Inserção da tabela dimenção: titulo
 */
-CREATE PROCEDURE InserDimTitle
+CREATE PROCEDURE inserDimTitle
 AS
 BEGIN
 INSERT INTO dataWareHouse.dbo.title SELECT title FROM poolCorrentistas.dbo.correntistas_banco_bravos 

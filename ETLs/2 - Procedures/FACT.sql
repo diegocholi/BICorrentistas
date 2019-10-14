@@ -1,15 +1,18 @@
-CREATE PROCEDURE InserFact
+USE dataWareHouse
+GO
+
+CREATE PROCEDURE inserFact
 AS
 BEGIN
-DECLARE @name NVARCHAR(50), @title NVARCHAR(50),
-	@male NVARCHAR(50), @culture NVARCHAR(50),
-	@mother NVARCHAR(50), @father NVARCHAR(50),
-	@heir NVARCHAR(50), @house NVARCHAR(50),
-    @isAliveMother NVARCHAR(50), @isAliveFather NVARCHAR(50),
-	@isAliveHeir NVARCHAR(50), @isAliveSpouse NVARCHAR(50),
-	@isMarried NVARCHAR(50), @isNoble NVARCHAR(50),
-	@isPopular NVARCHAR(50), @popularity NVARCHAR(50),
-	@divida MONEY, @numDeadReations NVARCHAR(50),
+DECLARE @name VARCHAR(50), @title VARCHAR(50),
+	@male VARCHAR(50), @culture VARCHAR(50),
+	@mother VARCHAR(50), @father VARCHAR(50),
+	@heir VARCHAR(50), @house VARCHAR(50),
+    @isAliveMother VARCHAR(50), @isAliveFather VARCHAR(50),
+	@isAliveHeir NVARCHAR(50), @isAliveSpouse VARCHAR(50),
+	@isMarried VARCHAR(50), @isNoble VARCHAR(50),
+	@isPopular VARCHAR(50), @popularity VARCHAR(50),
+	@divida MONEY, @numDeadReations VARCHAR(50),
 	@annualPaymentCapacity MONEY, @isDeath BIT,
 	@idHouse INT, @idTitle INT,
 	@idCulture INT, @diference MONEY 
@@ -27,9 +30,9 @@ SELECT
 	[isPopular], [popularity],
 	[numDeadRelations],
 	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Dívida], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)),
-	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Capacidade de pagamento anual], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)),
+	CAST(REPLACE(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Capacidade de pagamento anual],' ;', ''), '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)),
 	-- Subtração
-	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Capacidade de pagamento anual], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)) -
+	CAST(REPLACE(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Capacidade de pagamento anual],' ;', ''), '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)) -
 	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Dívida], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2))
 FROM poolCorrentistas.dbo.correntistas_banco_bravos 
   

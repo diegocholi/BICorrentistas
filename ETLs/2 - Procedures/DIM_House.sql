@@ -1,7 +1,9 @@
+USE dataWareHouse
+GO
 /*
 * Inserção da tabela dimenção: house
 */
-CREATE PROCEDURE InserDimHouse
+CREATE PROCEDURE inserDimHouse
 AS
 BEGIN
 INSERT INTO dataWareHouse.dbo.house SELECT house FROM poolCorrentistas.dbo.correntistas_banco_bravos 

@@ -1,7 +1,9 @@
+USE dataWareHouse
+GO
 /*
 * Inserção da tabela dimenção: culture
 */
-CREATE PROCEDURE InserDimCulture
+CREATE PROCEDURE inserDimCulture
 AS
 BEGIN
 INSERT INTO dataWareHouse.dbo.culture SELECT culture FROM poolCorrentistas.dbo.correntistas_banco_bravos 
@@ -13,3 +15,4 @@ END
 SELECT * FROM dataWareHouse.dbo.culture
 GO
 */
+
