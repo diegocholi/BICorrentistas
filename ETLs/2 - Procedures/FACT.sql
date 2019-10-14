@@ -1,17 +1,21 @@
+USE dataWareHouse
+GO
 
-DECLARE @name NVARCHAR(50), @title NVARCHAR(50),
-	@male NVARCHAR(50), @culture NVARCHAR(50),
-	@mother NVARCHAR(50), @father NVARCHAR(50),
-	@heir NVARCHAR(50), @house NVARCHAR(50),
-    @isAliveMother NVARCHAR(50), @isAliveFather NVARCHAR(50),
-	@isAliveHeir NVARCHAR(50), @isAliveSpouse NVARCHAR(50),
-	@isMarried NVARCHAR(50), @isNoble NVARCHAR(50),
-	@isPopular NVARCHAR(50), @popularity NVARCHAR(50),
-	@divida NVARCHAR(50), @numDeadReations NVARCHAR(50),
-	@annualPaymentCapacity NVARCHAR(50), @isDeath BIT,
+CREATE PROCEDURE inserFact
+AS
+BEGIN
+DECLARE @name VARCHAR(50), @title VARCHAR(50),
+	@male VARCHAR(50), @culture VARCHAR(50),
+	@mother VARCHAR(50), @father VARCHAR(50),
+	@heir VARCHAR(50), @house VARCHAR(50),
+    @isAliveMother VARCHAR(50), @isAliveFather VARCHAR(50),
+	@isAliveHeir NVARCHAR(50), @isAliveSpouse VARCHAR(50),
+	@isMarried VARCHAR(50), @isNoble VARCHAR(50),
+	@isPopular VARCHAR(50), @popularity VARCHAR(50),
+	@divida MONEY, @numDeadReations VARCHAR(50),
+	@annualPaymentCapacity MONEY, @isDeath BIT,
 	@idHouse INT, @idTitle INT,
-	@idCulture INT
-  
+	@idCulture INT, @diference MONEY 
 PRINT '-------- Carregando Fato (...) --------';  
   
 DECLARE fact CURSOR FOR   
@@ -24,8 +28,12 @@ SELECT
 	[isAliveHeir], [isAliveSpouse],
 	[isMarried], [isNoble],
 	[isPopular], [popularity],
-	[Dívida],[numDeadRelations],
-	[Capacidade de pagamento anual]
+	[numDeadRelations],
+	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Dívida], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)),
+	CAST(REPLACE(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Capacidade de pagamento anual],' ;', ''), '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)),
+	-- Subtração
+	CAST(REPLACE(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Capacidade de pagamento anual],' ;', ''), '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2)) -
+	CAST(REPLACE(REPLACE(REPLACE(poolCorrentistas.dbo.correntistas_banco_bravos.[Dívida], '.', ''),',','.'), 'R$', '') AS DECIMAL(12,2))
 FROM poolCorrentistas.dbo.correntistas_banco_bravos 
   
 OPEN fact  
@@ -39,8 +47,9 @@ INTO @name, @title ,
 	@isAliveHeir, @isAliveSpouse,
 	@isMarried, @isNoble,
 	@isPopular, @popularity,
-	@divida, @numDeadReations,
-	@annualPaymentCapacity 
+	@numDeadReations,
+	@divida, @annualPaymentCapacity, 
+	@diference
   
 WHILE @@FETCH_STATUS = 0  
 BEGIN  
@@ -58,6 +67,7 @@ BEGIN
 	IF EXISTS (SELECT * FROM poolCorrentistas.dbo.correntistas_banco_bravos WHERE culture = @culture)
 		SET @idCulture = (SELECT idCulture FROM dataWareHouse.dbo.culture WHERE culture = @culture)
 
+
 	IF EXISTS (SELECT * FROM poolCorrentistas.dbo.correntistas_obito WHERE name = @name)
 		SET @isDeath = 1
 
@@ -71,7 +81,8 @@ BEGIN
 				isNoble, isPopular,
 				isMale,	popularity, 
 				isDeath, idHouse,
-				idTitle, idCulture
+				idTitle, idCulture,
+				diference
 			) 
 		VALUES 
 			(
@@ -82,7 +93,8 @@ BEGIN
 				@isNoble, @isPopular,
 				@male, @popularity,
 				@isDeath, @idHouse,
-				@idTitle, @idCulture
+				@idTitle, @idCulture,
+				@diference
 			)
 
     FETCH NEXT FROM fact   
@@ -94,11 +106,10 @@ BEGIN
 		@isAliveHeir, @isAliveSpouse,
 		@isMarried, @isNoble,
 		@isPopular, @popularity,
-		@divida, @numDeadReations,
-		@annualPaymentCapacity 
+		@numDeadReations,
+		@divida, @annualPaymentCapacity, 
+		@diference
 END   
 CLOSE fact;  
 DEALLOCATE fact;  
-
-SELECT * FROM dataWareHouse.dbo.correntistas
-GO
+END
